@@ -1,0 +1,364 @@
+<title>Mock — Route Start Form (QA)</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0f2213;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  .device-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: #3d5c47;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 420px;
+    background: #f1f5f9;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  }
+
+  .status-bar {
+    background: #166534;
+    padding: 10px 20px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .status-bar .time { color: #fff; font-size: 13px; font-weight: 600; }
+  .status-bar .icons { color: #86efac; font-size: 12px; letter-spacing: 2px; }
+
+  .app-header {
+    background: #166534;
+    padding: 14px 20px 18px;
+  }
+  .app-header .qa-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #d97706;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .app-header h1 { color: #fff; font-size: 17px; font-weight: 700; line-height: 1.3; }
+  .app-header p { color: #86efac; font-size: 13px; margin-top: 3px; }
+
+  .form-body { padding: 16px; display: flex; flex-direction: column; gap: 0; }
+
+  .params-card {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    border: 1px solid #e2e8f0;
+  }
+  .params-card-header {
+    background: #f8fafc;
+    padding: 8px 14px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #64748b;
+    text-transform: uppercase;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .param-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 8px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 13px;
+  }
+  .param-row:last-child { border-bottom: none; }
+  .param-key { color: #64748b; font-weight: 600; min-width: 64px; flex-shrink: 0; }
+  .param-val {
+    color: #166534;
+    font-family: ui-monospace, "Cascadia Code", monospace;
+    font-size: 12px;
+    word-break: break-all;
+    line-height: 1.4;
+  }
+  .param-val.missing { color: #dc2626; font-style: italic; font-family: inherit; }
+
+  .question-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+    border: 1px solid #e2e8f0;
+  }
+  .q-label { font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 10px; line-height: 1.4; text-wrap: balance; }
+  .q-label .q-num {
+    color: #166534;
+    font-size: 11px;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 3px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  select, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #f8fafc;
+    color: #0f172a;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  select:focus, textarea:focus { border-color: #166534; background: #fff; }
+  textarea { min-height: 72px; resize: vertical; }
+
+  .actions { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.98); opacity: 0.9; }
+  .btn-primary { background: #166534; color: #fff; }
+  .btn-primary:hover { background: #14532d; }
+
+  .divider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    margin: 4px 0;
+  }
+  .divider-row hr { flex: 1; border: none; border-top: 1px solid #e2e8f0; }
+  .divider-row span {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .btn-secondary {
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 11px;
+    border: 1.5px solid #e2e8f0;
+  }
+  .btn-wrong {
+    background: #faf5ff;
+    color: #6d28d9;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 11px;
+    border: 1.5px solid #ddd6fe;
+  }
+
+  .log-wrap { padding: 0 16px 20px; }
+  .log-box {
+    background: #0f172a;
+    color: #6ee7b7;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: ui-monospace, "Cascadia Code", monospace;
+    font-size: 12px;
+    min-height: 38px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.5;
+  }
+  .log-box.error { color: #fca5a5; }
+  .log-box.success { color: #6ee7b7; }
+
+  .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: #166534;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    transition: transform 0.3s ease;
+    z-index: 999;
+    white-space: nowrap;
+    max-width: 90vw;
+    text-align: center;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error-toast { background: #991b1b; }
+</style>
+
+<div class="device-label">Vista previa — webview mock (inicio de ruta)</div>
+
+<div class="phone">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <span class="icons">▲ ◆ ⬛</span>
+  </div>
+
+  <div class="app-header">
+    <div class="qa-badge">⚙ QA Mock</div>
+    <h1>Checklist de inicio de ruta</h1>
+    <p>Completá antes de comenzar</p>
+  </div>
+
+  <div class="form-body">
+    <div class="params-card">
+      <div class="params-card-header">Parámetros recibidos</div>
+      <div class="param-row">
+        <span class="param-key">token</span>
+        <span class="param-val" id="p-token">—</span>
+      </div>
+      <div class="param-row">
+        <span class="param-key">userId</span>
+        <span class="param-val" id="p-userId">—</span>
+      </div>
+      <div class="param-row">
+        <span class="param-key">routeId</span>
+        <span class="param-val" id="p-routeId">—</span>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-label"><span class="q-num">Pregunta 1</span>¿El vehículo está en condiciones para salir?</div>
+      <select id="q1"><option value="">Seleccioná una opción</option><option>Sí</option><option>No</option></select>
+    </div>
+    <div class="question-card">
+      <div class="q-label"><span class="q-num">Pregunta 2</span>¿Tenés todos los paquetes/entregas asignados cargados?</div>
+      <select id="q2"><option value="">Seleccioná una opción</option><option>Sí</option><option>Parcialmente</option><option>No</option></select>
+    </div>
+    <div class="question-card">
+      <div class="q-label"><span class="q-num">Pregunta 3</span>¿El nivel de combustible es suficiente para completar la ruta?</div>
+      <select id="q3"><option value="">Seleccioná una opción</option><option>Sí</option><option>No</option></select>
+    </div>
+    <div class="question-card">
+      <div class="q-label"><span class="q-num">Pregunta 4</span>¿El dispositivo tiene batería o está conectado al cargador?</div>
+      <select id="q4"><option value="">Seleccioná una opción</option><option>Sí</option><option>No</option></select>
+    </div>
+    <div class="question-card">
+      <div class="q-label"><span class="q-num">Pregunta 5</span>¿Conocés la zona de entrega de esta ruta?</div>
+      <select id="q5"><option value="">Seleccioná una opción</option><option>Sí</option><option>Parcialmente</option><option>No</option></select>
+    </div>
+    <div class="question-card">
+      <div class="q-label"><span class="q-num">Pregunta 6 — Opcional</span>Observaciones antes de iniciar</div>
+      <textarea id="q6" placeholder="Ej: falta un bulto, vehículo con llanta baja..."></textarea>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="sendComplete()">Iniciar ruta</button>
+    <div class="divider-row"><hr><span>Casos QA adicionales</span><hr></div>
+    <button class="btn btn-wrong" onclick="sendWrongMessage()">Enviar postMessage incorrecto — NHP-06</button>
+    <button class="btn btn-secondary" onclick="sendNoMessage()">No enviar nada (simular cuelgue) — B-05</button>
+  </div>
+
+  <div class="log-wrap">
+    <div id="log" class="log-box">Esperando acción...</div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+  var DEFAULTS = {
+    token:   'd53eaa445a243f4ddc8bad2112c90d7fc91d5369',
+    userId:  '261865',
+    routeId: 'beab2e4a-3072-4100-b7d2-f2fd7b1e66a3'
+  };
+
+  var urlParams = new URLSearchParams(window.location.search);
+  ['token', 'userId', 'routeId'].forEach(function(key) {
+    var val = urlParams.get(key) || DEFAULTS[key];
+    var el = document.getElementById('p-' + key);
+    if (val) {
+      el.textContent = val.length > 38 ? val.substring(0, 38) + '…' : val;
+    } else {
+      el.textContent = 'FALTANTE';
+      el.classList.add('missing');
+    }
+  });
+
+  var toastTimer;
+  function showToast(msg, isError) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast' + (isError ? ' error-toast' : '');
+    clearTimeout(toastTimer);
+    setTimeout(function() { t.classList.add('show'); }, 10);
+    toastTimer = setTimeout(function() { t.classList.remove('show'); }, 3500);
+  }
+
+  function setLog(msg, state) {
+    var box = document.getElementById('log');
+    box.textContent = msg;
+    box.className = 'log-box' + (state ? ' ' + state : '');
+  }
+
+  function sendComplete() {
+    var fields = ['q1','q2','q3','q4','q5'];
+    for (var i = 0; i < fields.length; i++) {
+      if (!document.getElementById(fields[i]).value) {
+        showToast('⚠ Completá los campos 1–5 antes de iniciar', true);
+        setLog('ERROR: Completá los campos obligatorios (1–5) antes de enviar.', 'error');
+        return;
+      }
+    }
+    var payload = JSON.stringify({ type: 'form_complete' });
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(payload);
+      showToast('✓ postMessage enviado — ruta iniciando');
+    } else {
+      showToast('✓ Señal enviada: form_complete');
+    }
+    setLog('✓ postMessage ejecutado:\n' + payload + '\n\n→ En el webview real: la app cierra el modal e inicia la ruta.', 'success');
+  }
+
+  function sendWrongMessage() {
+    var payload = JSON.stringify({ type: 'ready' });
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(payload);
+    }
+    showToast('NHP-06: señal incorrecta enviada', true);
+    setLog('NHP-06 — postMessage incorrecto ejecutado:\n' + payload + '\n\n→ La app NO debería iniciar la ruta al recibir esto.', 'error');
+  }
+
+  function sendNoMessage() {
+    showToast('Sin señal — esperá el timeout (~15s)');
+    setLog('Sin postMessage enviado — B-05.\n\nEsperá ~15s el timeout de la app para verificar que aparece el fallback nativo.');
+  }
+</script>
