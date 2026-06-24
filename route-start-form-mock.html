@@ -303,15 +303,9 @@
 <div id="toast" class="toast"></div>
 
 <script>
-  var DEFAULTS = {
-    token:   'd53eaa445a243f4ddc8bad2112c90d7fc91d5369',
-    userId:  '261865',
-    routeId: 'beab2e4a-3072-4100-b7d2-f2fd7b1e66a3'
-  };
-
   var urlParams = new URLSearchParams(window.location.search);
   ['token', 'userId', 'routeId'].forEach(function(key) {
-    var val = urlParams.get(key) || DEFAULTS[key];
+    var val = urlParams.get(key);
     var el = document.getElementById('p-' + key);
     if (val) {
       el.textContent = val.length > 38 ? val.substring(0, 38) + '…' : val;
