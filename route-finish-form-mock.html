@@ -1,3 +1,4 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mock — Route Finish Form (QA)</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -252,6 +253,13 @@
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.error-toast { background: #991b1b; }
+
+  @media (max-width: 500px) {
+    body { background: #f1f5f9; padding: 0; align-items: stretch; }
+    .device-label { display: none; }
+    .phone { border-radius: 0; box-shadow: none; max-width: 100%; }
+    .status-bar { display: none; }
+  }
 </style>
 
 <div class="device-label">Vista previa — webview mock</div>
